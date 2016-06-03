@@ -1,6 +1,23 @@
 <?php
 
 /**
+ * Sanitize and validate a date in standard Atlas format
+ *
+ * @param string $date Unsanitized date
+ *
+ * @uses sanitize_text_field()
+ *
+ * @return string Sanitized date
+ */
+function atlas_sanitize_date( $date ) {
+	$date = sanitize_text_field( $date );
+
+	$date = date( 'Y-m-d', strtotime( $date ) );
+
+	return $date;
+}
+
+/**
  * Determine if a date is between two other dates
  *
  * @param string $compare_date The date to compare

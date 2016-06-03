@@ -56,8 +56,31 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 
 		}
 
-		public function run_daily_tasks() {
+		public function run_daily_tasks( $args, $assoc_args ) {
+			$this->sync_metrics_from_google_analytics();
+		}
 
+		protected function sync_metrics_from_google_analytics( $args = array() ) {
+			$args = wp_parse_args( $args, array( 
+				'account'    => 'ga:' . absint( $this->settings[0][1] ), 
+				'metrics'    => 'ga:pageviews,ga:sessions,ga:users,ga:bounces', 
+				'date'       => atlas_sanitize_date( 'yesterday' ), 
+				'filters'    => null, 
+				'dimensions' => null, 
+			));
+
+			$this->setup_google_service_client( 'analytics' );
+
+			$data = $this->google_analytics_api_call( 
+				'profile'    => $args['account'], 
+				'date_from'  => $args['date'], 
+				'date_to'    => $args['date'], 
+				'metrics'    => $args['metrics'], 
+				'dimensions' => $args['dimensions'], 
+				'filters'    => $args['filters'], 
+			);
+
+			clover_write( $data );
 		}
 
 		/**
